@@ -1,7 +1,7 @@
 import pyglet as _pyglet
 
 from vector import Vector as _Vector
-from NN.neuralnet import NeuralNet as _NeuralNet
+from ffnn.neuralnet import NeuralNet as _NeuralNet
 
 ANT_IMAGE = "resources/images/ant.png"
 

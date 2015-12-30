@@ -1,0 +1,3 @@
+[submodule "ffnn"]
+	path = ffnn
+	url = git@github.com:jpypi/ffnn
