@@ -60,11 +60,6 @@ class SpriteWindow(pyglet.window.Window):
     def update(self, dt):
         self.step += 1
         for ant in self.ants:
-            #closest = ant.getClosestFood(self.food)
-            #ant.vec.angle = (ant.pos - closest).angle
-            #if closest.x < ant.pos.x:
-            #    ant.vec.angle += 180
-
             ant.update(dt, self.food)
             for food in self.food:
                 if ant.collidesWith(food):

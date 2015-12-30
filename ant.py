@@ -26,18 +26,6 @@ class Ant(_pyglet.sprite.Sprite):
         self.neural_net = _NeuralNet(4, 2, [6])
         self.score = 0
 
-#    def update(self, dt):
-#        self.rotation = 90 - self.vec.angle
-#        self.pos[0] += self.vec[0] * dt
-#        self.pos[1] += self.vec[1] * dt
-#        self.x = self.pos.x
-#        self.y = self.pos.y
-#        if self.pos.x > self.parent_window.width: self.pos.x = 0
-#        if self.pos.x < 0: self.pos.x = self.parent_window.width
-#        if self.pos.y > self.parent_window.height: self.pos.y = 0
-#        if self.pos.y < 0: self.pos.y = self.parent_window.height
-
-
     def update(self, dt, food):
         closest_food = self.getClosestFood(food);
 
