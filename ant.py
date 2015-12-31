@@ -4,9 +4,11 @@ from vector import Vector as _Vector
 from ffnn.neuralnet import NeuralNet as _NeuralNet
 
 ANT_IMAGE = "resources/images/ant.png"
+PRO_ANT_IMAGE = "resources/images/ant-good.png"
 
 class Ant(_pyglet.sprite.Sprite):
-    image = _pyglet.resource.image(ANT_IMAGE)
+    image = _pyglet.image.load(ANT_IMAGE)
+    pro_image = _pyglet.image.load(PRO_ANT_IMAGE)
     image.anchor_x = image.width/2
     image.anchor_y = image.height/2
 
@@ -20,11 +22,17 @@ class Ant(_pyglet.sprite.Sprite):
         self.look_vector = move_vec
         self.pos = _Vector(pos[0], pos[1], True)
 
-        self.speed = 40
-        self.rrate = 30
+        self.speed = 60
+        self.rrate = 40
 
         self.neural_net = _NeuralNet(4, 2, [6])
         self.score = 0
+
+    def updateImage(self, is_pro):
+        if is_pro:
+            self.image = Ant.pro_image
+        else:
+            self.image = Ant.image
 
     def update(self, dt, food):
         closest_food = self.getClosestFood(food);
