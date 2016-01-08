@@ -16,7 +16,7 @@ class Ant(_pyglet.sprite.Sprite):
         super(Ant, self).__init__(Ant.image, pos[0], pos[1], batch=batch)
         self.parent_window = parent_window
 
-        self.scale = 0.5
+        self.scale = 0.4
         self.radius = Ant.image.width/2 * self.scale
 
         self.look_vector = move_vec
@@ -35,7 +35,7 @@ class Ant(_pyglet.sprite.Sprite):
             self.image = Ant.image
 
     def update(self, dt, food):
-        closest_food = self.getClosestFood(food);
+        closest_food = self.getClosestFoodVec(food);
 
         ltrack, rtrack = self.neural_net.GetOutput((self.look_vector.x,
                                                     self.look_vector.y,
@@ -70,7 +70,17 @@ class Ant(_pyglet.sprite.Sprite):
     def getClosestFood(self, food):
         closest = None
         for f in food:
-            if closest==None or (self.pos-f.pos).magnitude < (self.pos-closest).magnitude:
+            if closest == None or \
+               (self.pos - f.pos).magnitude < (self.pos-closest).magnitude:
                 closest = f.pos
+
+        return closest
+
+
+    def getClosestFoodVec(self, food):
+        closest = None
+        for f in food:
+            if closest == None or (self.pos-f.pos).magnitude < closest.magnitude:
+                closest = self.pos-f.pos
 
         return closest
