@@ -74,7 +74,7 @@ class SpriteWindow(pyglet.window.Window):
 
         if symbol == "l":
             print "Loading weights"
-            with open("net_weights.txt") as f:
+            with open("net_weights.bak") as f:
                 for ant in self.ants:
                     ant.neural_net.SetWeights(map(float,f.readline().split(",")))
 
