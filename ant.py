@@ -25,7 +25,7 @@ class Ant(_pyglet.sprite.Sprite):
         self.speed = 5
         self.rrate = 40
 
-        self.neural_net = _NeuralNet(4, 2, [6])
+        self.neural_net = _NeuralNet(6, 2, [8, 6])
         self.score = 0
 
     def updateImage(self, is_pro):
@@ -34,13 +34,19 @@ class Ant(_pyglet.sprite.Sprite):
         else:
             self.image = Ant.image
 
-    def update(self, dt, food):
-        closest_food = self.getClosestFoodVec(food);
+    def update(self, dt, food, poison):
+        closest_food = self.getClosestConsumableVec(food);
+        closest_poison = self.getClosestConsumableVec(poison);
 
         ltrack, rtrack = self.neural_net.GetOutput((self.look_vector.x,
                                                     self.look_vector.y,
                                                     closest_food.x,
-                                                    closest_food.y))
+                                                    closest_food.y,
+                                                    closest_poison.x,
+                                                    closest_poison.y
+                                                    ))
+
+
 
         r_rate = (rtrack - ltrack ) * self.rrate
         self.look_vector.magnitude = (rtrack + ltrack) / 2 * self.speed
@@ -77,7 +83,7 @@ class Ant(_pyglet.sprite.Sprite):
         return closest
 
 
-    def getClosestFoodVec(self, food):
+    def getClosestConsumableVec(self, food):
         closest = None
         for f in food:
             if closest == None or (self.pos-f.pos).magnitude < closest.magnitude:

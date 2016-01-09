@@ -12,7 +12,7 @@ from pyglet.window import key
 
 from vector import Vector
 from ant import Ant, PRO_ANT_IMAGE
-from food import Food
+from food import Food, Poison
 
 import ga
 from chromosome import Chromosome
@@ -31,9 +31,15 @@ class SpriteWindow(pyglet.window.Window):
         self.sprite_batch = pyglet.graphics.Batch()
         self.ants = []
         self.food = []
+        self.poision = [
+                        Poison(self, (size[0]/4,     size[1]/4), self.sprite_batch),
+                        Poison(self, (size[0]/4,   3*size[1]/4), self.sprite_batch),
+                        Poison(self, (3*size[0]/4,   size[1]/4), self.sprite_batch),
+                        Poison(self, (3*size[0]/4, 3*size[1]/4), self.sprite_batch)
+                       ]
 
-        self.num_food = 20
-        self.num_ants = 25
+        self.num_food = 25
+        self.num_ants = 30
 
         self.growFood()
 
@@ -43,10 +49,12 @@ class SpriteWindow(pyglet.window.Window):
 
         pyglet.clock.schedule_interval(self.update, 1.0/fps)
 
-        self.ga = ga.RealGeneticAlg(perturbation_bounds = (0.01, 0.3),
+        self.ga = ga.RealGeneticAlg(
+                                    perturbation_bounds = (0.01, 0.3),
                                     crossover_rate = 0.7,
-                                    mutation_rate = 0.2
-                                    )
+                                    mutation_rate = 0.2,
+                                    elite = 6
+                                   )
 
 
     @staticmethod
@@ -81,21 +89,27 @@ class SpriteWindow(pyglet.window.Window):
         if symbol == "f":
             self.fastMode(2)
 
+
     def fastMode(self, generations = 1):
         stop_generation = self.generations + generations
         while self.generations < stop_generation:
             self.update(1)
+
 
     # dt is "delta time" since last update
     def update(self, dt):
         self.step += 1
 
         for ant in self.ants:
-            ant.update(0.5, self.food)
+            ant.update(0.5, self.food, self.poision)
             for food in self.food:
                 if not food.eaten and ant.collidesWith(food):
                     food.eaten = True
                     ant.score += 1
+
+            for poison in self.poision:
+                if ant.collidesWith(poison):
+                    ant.score -= 3
 
         self.food = filter(lambda f: not f.eaten, self.food)
 
