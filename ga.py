@@ -73,14 +73,14 @@ class RealGeneticAlg(SwitchBreeder):
             dad = RouletteSelect(old_population)
 
             # Breed parents, mutate and add both children to new population
-            new_population.extend(map(self.Mutate,self.Breed(mom, dad)))
+            new_population.extend(map(self.Mutate, self.Breed(mom, dad)))
 
         return new_population
 
     def Mutate(self, chromosome):
         for i in xrange(len(chromosome)):
             chromosome[i] += random.choice((1, -1)) * \
-                             random.random()*self.perturbation_bounds[1]
+                             random.random() * self.perturbation_bounds[1]
                              #ClampRandom(*self.perturbation_bounds)
         return chromosome
 
@@ -94,6 +94,9 @@ def RouletteSelect(population):
         last += chromosome.score
         if last >= pie_slice:
             return chromosome
+
+    # This needs to happen in the event that the scores were too low
+    return random.choice(population)
 
 
 def MyRouletteSelect(population):
