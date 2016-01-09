@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+#!/usr/bin/env python2
 
 # Many thanks to this guy:
 # http://www.akeric.com/blog/?p=1527
@@ -32,20 +32,20 @@ class SpriteWindow(pyglet.window.Window):
         self.ants = []
         self.food = []
 
-        self.num_food = 25
-        self.num_ants = 15
+        self.num_food = 20
+        self.num_ants = 25
 
         self.growFood()
 
         self.step = 0
         self.generations = 0
-        self.population_change_steps = 600
+        self.population_change_steps = 1000
 
         pyglet.clock.schedule_interval(self.update, 1.0/fps)
 
         self.ga = ga.RealGeneticAlg(perturbation_bounds = (0.01, 0.3),
                                     crossover_rate = 0.7,
-                                    mutation_rate = 0.1
+                                    mutation_rate = 0.2
                                     )
 
 
@@ -65,50 +65,82 @@ class SpriteWindow(pyglet.window.Window):
         self.sprite_batch.draw()
 
 
+    def on_text(self, symbol):
+        if symbol == "s":
+            print "Saving weights"
+            with open("net_weights.txt", "w") as f:
+                for a in self.ants:
+                    f.write(",".join(map(str, a.neural_net.GetWeights())) + "\n")
+
+        if symbol == "l":
+            print "Loading weights"
+            with open("net_weights.txt") as f:
+                for ant in self.ants:
+                    ant.neural_net.SetWeights(map(float,f.readline().split(",")))
+
+        if symbol == "f":
+            self.fastMode(2)
+
+    def fastMode(self, generations = 1):
+        stop_generation = self.generations + generations
+        while self.generations < stop_generation:
+            self.update(1)
+
     # dt is "delta time" since last update
     def update(self, dt):
         self.step += 1
+
         for ant in self.ants:
-            ant.update(dt, self.food)
+            ant.update(0.5, self.food)
             for food in self.food:
-                if ant.collidesWith(food):
+                if not food.eaten and ant.collidesWith(food):
                     food.eaten = True
                     ant.score += 1
 
-            self.food = filter(lambda f: not f.eaten, self.food)
+        self.food = filter(lambda f: not f.eaten, self.food)
 
         self.growFood()
 
         if self.step > self.population_change_steps:
             self.generations += 1
-            scores = map(lambda x: x.score, self.ants)
-            print self.generations, min(scores), \
-                  max(scores), sum(scores)/float(len(scores))
-            #print "Gen: {} Max: {} Avg: {}".format(self.generations,
-            #                                       max(scores),
-            #                                       sum(scores)/float(len(scores))
-            #                                      )
+            self.printStats()
 
             self.step = 0
             self.updateNets(self.ga.NewPopulation(self.chromosomesFromAnts()))
+
+
+    def printStats(self):
+        avg_score = 0
+        max_score = 0
+        min_score = None
+        for a in self.ants:
+            avg_score += a.score
+            if a.score > max_score:
+                max_score = a.score
+            if min_score == None or a.score < min_score:
+                min_score = a.score
+
+        print self.generations, min_score, max_score, avg_score/float(self.num_ants)
+
 
     def chromosomesFromAnts(self):
         return [Chromosome(a.neural_net.GetWeights(), a.score) for a in self.ants]
 
     def updateNets(self, chromosomes):
-        for i in xrange(len(self.ants)):
+        for i in xrange(self.num_ants):
             self.ants[i].score = 0
-            self.ants[i].updateImage(chromosomes[i].is_top_performer)
+            #self.ants[i].updateImage(chromosomes[i].is_top_performer)
             self.ants[i].neural_net.SetWeights(chromosomes[i])
 
     def getRandomPoint(self, margin = 0):
-        return random.randrange(margin ,self.width - margin),random.randrange(margin, self.height - margin)
+        return (random.randrange(margin ,self.width - margin),
+                random.randrange(margin, self.height - margin))
 
     def growFood(self):
-        #(random.randrange(0,100), random.randrange(0,100))
         while len(self.food) < self.num_food:
-            self.food.append(Food(self, self.getRandomPoint(10),
-                                  self.sprite_batch))
+            #point = (random.randrange(0,100), random.randrange(0,100))
+            point = self.getRandomPoint(10)
+            self.food.append(Food(self, point, self.sprite_batch))
 
     def initAnts(self):
         for i in xrange(self.num_ants):
@@ -120,6 +152,9 @@ class SpriteWindow(pyglet.window.Window):
 
 
 if __name__ == "__main__":
-    window = SpriteWindow((400,400), fps = 120)
+    import cProfile
+    window = SpriteWindow((400,400), fps = 240)
     window.initAnts()
+    #cProfile.run("window.update(1, 20)")
+    #window.fastMode(10)
     sys.exit(window.run())

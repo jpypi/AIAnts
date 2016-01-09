@@ -22,7 +22,7 @@ class Ant(_pyglet.sprite.Sprite):
         self.look_vector = move_vec
         self.pos = _Vector(pos[0], pos[1], True)
 
-        self.speed = 60
+        self.speed = 5
         self.rrate = 40
 
         self.neural_net = _NeuralNet(4, 2, [6])
