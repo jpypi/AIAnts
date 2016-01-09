@@ -68,7 +68,7 @@ class SpriteWindow(pyglet.window.Window):
     def on_text(self, symbol):
         if symbol == "s":
             print "Saving weights"
-            with open("net_weights.txt", "w") as f:
+            with open("net_weights.bak", "w") as f:
                 for a in self.ants:
                     f.write(",".join(map(str, a.neural_net.GetWeights())) + "\n")
 
