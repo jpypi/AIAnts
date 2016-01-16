@@ -44,8 +44,9 @@ class SpriteWindow(pyglet.window.Window):
         pyglet.clock.schedule_interval(self.update, 1.0/fps)
 
         self.ga = ga.RealGeneticAlg(perturbation_bounds = (0.01, 0.3),
-                                    crossover_rate = 0.7,
-                                    mutation_rate = 0.2
+                                    crossover_rate = 0.6,
+                                    mutation_rate = 0.2,
+                                    elite = 6
                                     )
 
 
