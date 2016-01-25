@@ -82,6 +82,9 @@ class SpriteWindow(pyglet.window.Window):
         if symbol == "f":
             self.fastMode(2)
 
+        if symbol == "v":
+            self.fastMode(10)
+
     def fastMode(self, generations = 1):
         stop_generation = self.generations + generations
         while self.generations < stop_generation:
