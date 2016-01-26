@@ -49,12 +49,11 @@ class SpriteWindow(pyglet.window.Window):
 
         pyglet.clock.schedule_interval(self.update, 1.0/fps)
 
-        self.ga = ga.RealGeneticAlg(
-                                    perturbation_bounds = (0.01, 0.3),
-                                    crossover_rate = 0.7,
+        self.ga = ga.RealGeneticAlg(perturbation_bounds = (0.01, 0.3),
+                                    crossover_rate = 0.6,
                                     mutation_rate = 0.2,
                                     elite = 6
-                                   )
+                                    )
 
 
     @staticmethod
@@ -76,19 +75,21 @@ class SpriteWindow(pyglet.window.Window):
     def on_text(self, symbol):
         if symbol == "s":
             print "Saving weights"
-            with open("net_weights.txt", "w") as f:
+            with open("net_weights.bak", "w") as f:
                 for a in self.ants:
                     f.write(",".join(map(str, a.neural_net.GetWeights())) + "\n")
 
         if symbol == "l":
             print "Loading weights"
-            with open("net_weights.txt") as f:
+            with open("net_weights.bak") as f:
                 for ant in self.ants:
                     ant.neural_net.SetWeights(map(float,f.readline().split(",")))
 
         if symbol == "f":
             self.fastMode(2)
 
+        if symbol == "v":
+            self.fastMode(10)
 
     def fastMode(self, generations = 1):
         stop_generation = self.generations + generations

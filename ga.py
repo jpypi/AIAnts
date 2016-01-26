@@ -5,10 +5,9 @@ from chromosome import Chromosome
 
 
 # Gene mixing (every gene) type breeding
-class DistBreeder(object):
-    def __init__(self, crossover_rate, mutation_rate):
+class SwapBreeder(object):
+    def __init__(self, crossover_rate = 0.5):
         self.crossover_rate = crossover_rate
-        self.mutation_rate = mutation_rate
 
     def Breed(self, parent1, parent2):
         child1 = []
@@ -25,10 +24,9 @@ class DistBreeder(object):
 
 
 # "Crossover" type chromosome breeding
-class SwitchBreeder(object):
-    def __init__(self, crossover_rate, mutation_rate):
+class CrossoverBreeder(object):
+    def __init__(self, crossover_rate = 0.7):
         self.crossover_rate = crossover_rate
-        self.mutation_rate = mutation_rate
 
     def Breed(self, mom, dad):
         # Shall we do crossover?
@@ -49,10 +47,12 @@ class SwitchBreeder(object):
 
 # Mutation rate is suggested to between 0.05 and 0.2 (from ai-junki.com) for
 # real number alleles
-class RealGeneticAlg(SwitchBreeder):
-    def __init__(self, crossover_rate = 0.5, mutation_rate = 0.1,
+class RealGeneticAlg(SwapBreeder):
+    def __init__(self, crossover_rate = 0.5, mutation_rate = 0.15,
                        perturbation_bounds = (0.05, 0.1), elite = 4):
-        super(RealGeneticAlg, self).__init__(crossover_rate, mutation_rate)
+        super(RealGeneticAlg, self).__init__(crossover_rate)
+
+        self.mutation_rate = mutation_rate
 
         self.perturbation_bounds = perturbation_bounds
         self.n_elite = elite
@@ -102,14 +102,15 @@ def RouletteSelect(population):
 def MyRouletteSelect(population):
     n = random.random()
     last = 0
-    total = sum(map(lambda x: x.score, population))
+    total = float(sum(map(lambda x: x.score, population)))
     if total != 0:
-        for chromosome in population:
-            score = chromosome.score
+        for chromosome in sorted(population, key = lambda x: x.score):
+            score = chromosome.score/total
             if last < n and n <= (last + score):
                 return chromosome
             last += score
     else:
+        print("Huston, we have a problem!")
         return random.choice(population)
 
 
