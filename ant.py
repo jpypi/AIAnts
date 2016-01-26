@@ -23,9 +23,9 @@ class Ant(_pyglet.sprite.Sprite):
         self.pos = _Vector(pos[0], pos[1], True)
 
         self.speed = 5
-        self.rrate = 40
+        self.rrate = 12 #40
 
-        self.neural_net = _NeuralNet(6, 2, [8, 6])
+        self.neural_net = _NeuralNet(6, 2, [8])
         self.score = 0
 
     def updateImage(self, is_pro):
@@ -34,12 +34,17 @@ class Ant(_pyglet.sprite.Sprite):
         else:
             self.image = Ant.image
 
-    def update(self, dt, food, poison):
+    def update(self, dt, food, poison=[]):
         closest_food = self.getClosestConsumableVec(food);
         closest_poison = self.getClosestConsumableVec(poison);
 
-        ltrack, rtrack = self.neural_net.GetOutput((self.look_vector.x,
-                                                    self.look_vector.y,
+        lv = self.look_vector / self.look_vector.magnitude
+        closest_food   /= closest_food.magnitude
+        closest_poison /= closest_poison.magnitude
+
+        ltrack, rtrack = self.neural_net.GetOutput((
+                                                    lv.x,
+                                                    lv.y,
                                                     closest_food.x,
                                                     closest_food.y,
                                                     closest_poison.x,
@@ -49,6 +54,9 @@ class Ant(_pyglet.sprite.Sprite):
 
 
         r_rate = (rtrack - ltrack ) * self.rrate
+        #if r_rate < -5: r_rate = -5
+        #if r_rate >  5: r_rate =  5
+
         self.look_vector.magnitude = (rtrack + ltrack) / 2 * self.speed
         self.look_vector.angle += r_rate
 

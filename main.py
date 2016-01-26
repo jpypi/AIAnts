@@ -31,7 +31,7 @@ class SpriteWindow(pyglet.window.Window):
         self.sprite_batch = pyglet.graphics.Batch()
         self.ants = []
         self.food = []
-        self.poision = [
+        self.poison = [
                         Poison(self, (size[0]/4,     size[1]/4), self.sprite_batch),
                         Poison(self, (size[0]/4,   3*size[1]/4), self.sprite_batch),
                         Poison(self, (3*size[0]/4,   size[1]/4), self.sprite_batch),
@@ -45,7 +45,7 @@ class SpriteWindow(pyglet.window.Window):
 
         self.step = 0
         self.generations = 0
-        self.population_change_steps = 1000
+        self.population_change_steps = 1600
 
         pyglet.clock.schedule_interval(self.update, 1.0/fps)
 
@@ -62,7 +62,6 @@ class SpriteWindow(pyglet.window.Window):
             raise ValueError, "Color must be of length 4!"
         pyglet.gl.glClearColor(*color)
 
-
     @staticmethod
     def run():
         pyglet.app.run()
@@ -70,7 +69,6 @@ class SpriteWindow(pyglet.window.Window):
     def on_draw(self):
         self.clear()
         self.sprite_batch.draw()
-
 
     def on_text(self, symbol):
         if symbol == "s":
@@ -96,21 +94,23 @@ class SpriteWindow(pyglet.window.Window):
         while self.generations < stop_generation:
             self.update(1)
 
-
     # dt is "delta time" since last update
     def update(self, dt):
         self.step += 1
 
         for ant in self.ants:
-            ant.update(0.5, self.food, self.poision)
+            ant.update(0.5, self.food, self.poison)
             for food in self.food:
                 if not food.eaten and ant.collidesWith(food):
                     food.eaten = True
                     ant.score += 1
 
-            for poison in self.poision:
+            for poison in self.poison:
                 if ant.collidesWith(poison):
                     ant.score -= 3
+                    break
+            else:
+                ant.score += 1
 
         self.food = filter(lambda f: not f.eaten, self.food)
 
@@ -122,7 +122,6 @@ class SpriteWindow(pyglet.window.Window):
 
             self.step = 0
             self.updateNets(self.ga.NewPopulation(self.chromosomesFromAnts()))
-
 
     def printStats(self):
         avg_score = 0
@@ -136,7 +135,6 @@ class SpriteWindow(pyglet.window.Window):
                 min_score = a.score
 
         print self.generations, min_score, max_score, avg_score/float(self.num_ants)
-
 
     def chromosomesFromAnts(self):
         return [Chromosome(a.neural_net.GetWeights(), a.score) for a in self.ants]
