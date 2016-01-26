@@ -19,7 +19,7 @@ class Vector(object):
             self.__angle = 0
         else:
             self.__angle = math.atan(self.__y / self.__x)
-        self.__magnitude = math.sqrt(self.__x**2 + self.__y**2)
+        self.__magnitude = math.hypot(self.__x, self.__y)
 
     def __updatePoint(self):
         self.__x = math.cos(self.__angle) * self.__magnitude
@@ -31,7 +31,7 @@ class Vector(object):
         return math.degrees(self.__angle)
     @angle.setter
     def angle(self, value):
-        self.__angle = math.radians(float(value))
+        self.__angle = math.radians(value)
         self.__updatePoint()
 
     @property
@@ -59,12 +59,10 @@ class Vector(object):
         self.__updateVector()
 
     def __div__(self, value):
-        self.__magnitude /= float(value)
-        self.__updateVector()
+        return Vector(self.__magnitude / float(value), self.__angle)
 
     def __mul__(self, value):
-        self.__magnitude *= value
-        self.__updatePoint()
+        return Vector(self.__magnitude * value, self.__angle)
 
     def __repr__(self):
         return "({},{}) aka {} at {} deg".format(self.x, self.y,
