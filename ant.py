@@ -6,11 +6,18 @@ from ffnn.neuralnet import NeuralNet as _NeuralNet
 ANT_IMAGE = "resources/images/ant.png"
 PRO_ANT_IMAGE = "resources/images/ant-good.png"
 
+
+def load_centered_image(image_path):
+    image = _pyglet.image.load(image_path)
+    image.anchor_x = image.width // 2
+    image.anchor_y = image.height // 2
+
+    return image
+
+
 class Ant(_pyglet.sprite.Sprite):
-    image = _pyglet.image.load(ANT_IMAGE)
-    pro_image = _pyglet.image.load(PRO_ANT_IMAGE)
-    image.anchor_x = image.width/2
-    image.anchor_y = image.height/2
+    image = load_centered_image(ANT_IMAGE)
+    pro_image = load_centered_image(PRO_ANT_IMAGE)
 
     def __init__(self, parent_window, pos, move_vec, batch=None):
         super(Ant, self).__init__(Ant.image, pos[0], pos[1], batch=batch)

@@ -78,7 +78,7 @@ class Vector(object):
         elif index == 1:
             return self.y
         else:
-            raise IndexError, "Vector only has indicies 0 and 1 for x and y!"
+            raise IndexError("Vector only has indicies 0 and 1 for x and y!")
 
     def __setitem__(self, index, value):
         if index == 0:
@@ -86,7 +86,7 @@ class Vector(object):
         elif index == 1:
             self.y = value
         else:
-            raise IndexError, "Vector only has indicies 0 and 1 for x and y!"
+            raise IndexError("Vector only has indicies 0 and 1 for x and y!")
 
     def __add__(self, vec2):
         return Vector(self.x + vec2.x, self.y + vec2.y, True)

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 # Many thanks to this guy:
 # http://www.akeric.com/blog/?p=1527
@@ -53,7 +53,7 @@ class SpriteWindow(pyglet.window.Window):
     @staticmethod
     def setBackgroundColor(color=(0.9, 0.9, 0.9, 1)):
         if len(color) != 4:
-            raise ValueError, "Color must be of length 4!"
+            raise ValueError("Color must be of length 4!")
         pyglet.gl.glClearColor(*color)
 
 
@@ -68,16 +68,16 @@ class SpriteWindow(pyglet.window.Window):
 
     def on_text(self, symbol):
         if symbol == "s":
-            print "Saving weights"
+            print("Saving weights")
             with open("net_weights.bak", "w") as f:
                 for a in self.ants:
                     f.write(",".join(map(str, a.neural_net.GetWeights())) + "\n")
 
         if symbol == "l":
-            print "Loading weights"
+            print("Loading weights")
             with open("net_weights.bak") as f:
                 for ant in self.ants:
-                    ant.neural_net.SetWeights(map(float,f.readline().split(",")))
+                    ant.neural_net.SetWeights(map(float, f.readline().split(",")))
 
         if symbol == "f":
             self.fastMode(2)
@@ -101,7 +101,7 @@ class SpriteWindow(pyglet.window.Window):
                     food.eaten = True
                     ant.score += 1
 
-        self.food = filter(lambda f: not f.eaten, self.food)
+        self.food = [f for f in self.food if not f.eaten]
 
         self.growFood()
 
@@ -111,7 +111,6 @@ class SpriteWindow(pyglet.window.Window):
 
             self.step = 0
             self.updateNets(self.ga.NewPopulation(self.chromosomesFromAnts()))
-
 
     def printStats(self):
         avg_score = 0
@@ -124,14 +123,14 @@ class SpriteWindow(pyglet.window.Window):
             if min_score == None or a.score < min_score:
                 min_score = a.score
 
-        print self.generations, min_score, max_score, avg_score/float(self.num_ants)
+        print(self.generations, min_score, max_score, avg_score/self.num_ants)
 
 
     def chromosomesFromAnts(self):
         return [Chromosome(a.neural_net.GetWeights(), a.score) for a in self.ants]
 
     def updateNets(self, chromosomes):
-        for i in xrange(self.num_ants):
+        for i in range(self.num_ants):
             self.ants[i].score = 0
             #self.ants[i].updateImage(chromosomes[i].is_top_performer)
             self.ants[i].neural_net.SetWeights(chromosomes[i])
@@ -147,12 +146,10 @@ class SpriteWindow(pyglet.window.Window):
             self.food.append(Food(self, point, self.sprite_batch))
 
     def initAnts(self):
-        for i in xrange(self.num_ants):
+        for i in range(self.num_ants):
             a = random.randrange(0, 359)
             self.ants.append(Ant(self, self.getRandomPoint(),
                                  Vector(20, a), self.sprite_batch))
-
-
 
 
 if __name__ == "__main__":

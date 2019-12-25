@@ -12,7 +12,7 @@ class SwapBreeder(object):
     def Breed(self, parent1, parent2):
         child1 = []
         child2 = []
-        for i in xrange(len(parent1)):
+        for i in range(len(parent1)):
             if random.random() < self.crossover_rate:
                 child1.append(parent1[i])
                 child2.append(parent2[i])
@@ -78,7 +78,7 @@ class RealGeneticAlg(SwapBreeder):
         return new_population
 
     def Mutate(self, chromosome):
-        for i in xrange(len(chromosome)):
+        for i in range(len(chromosome)):
             chromosome[i] += random.choice((1, -1)) * \
                              random.random()*self.perturbation_bounds[1]
                              #ClampRandom(*self.perturbation_bounds)
@@ -87,7 +87,7 @@ class RealGeneticAlg(SwapBreeder):
 
 # Based off code at ai-junki.com
 def RouletteSelect(population):
-    total = sum(map(lambda x: x.score, population))
+    total = sum([x.score for x in population])
     pie_slice = random.random() * total
     last = 0
     for chromosome in population:
@@ -99,7 +99,7 @@ def RouletteSelect(population):
 def MyRouletteSelect(population):
     n = random.random()
     last = 0
-    total = float(sum(map(lambda x: x.score, population)))
+    total = float(sum([x.score for x in population]))
     if total != 0:
         for chromosome in sorted(population, key = lambda x: x.score):
             score = chromosome.score/total
