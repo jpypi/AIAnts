@@ -11,7 +11,7 @@ import pyglet
 from pyglet.window import key
 
 from vector import Vector
-from ant import Ant, PRO_ANT_IMAGE
+from ant import Ant
 from food import Food
 
 import ga
@@ -123,8 +123,9 @@ class SpriteWindow(pyglet.window.Window):
             if min_score == None or a.score < min_score:
                 min_score = a.score
 
-        print(self.generations, min_score, max_score, avg_score/self.num_ants)
 
+        print("{:3d} {:3d} {:3d} {:.4f}".format(
+            self.generations, min_score, max_score, avg_score / self.num_ants))
 
     def chromosomesFromAnts(self):
         return [Chromosome(a.neural_net.GetWeights(), a.score) for a in self.ants]
